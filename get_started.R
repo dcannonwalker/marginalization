@@ -1,0 +1,17 @@
+install.packages("renv")
+renv::activate()
+renv::install("gitcreds")
+renv::install("stan-dev/cmdstanr")
+renv::install("posterior")
+renv::install("ggplot2")
+renv::install("dplyr")
+renv::install("rmarkdown")
+renv::install("quarto")
+# maybe necessary for ngstan???
+# library(cmdstanr)
+# install_cmdstan()
+# cmdstan_make_local(cpp_options = cmdstan_make_local(dir = "/Users/davidwalker/.cmdstan/cmdstan-2.35.0"))
+# rebuild_cmdstan()
+
+renv::install("rjags")
+renv::install("usethis")

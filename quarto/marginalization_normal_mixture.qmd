@@ -1,0 +1,71 @@
+---
+title: "Marginalization of discrete parameters"
+format: 
+  html:
+    self-contained: true
+---
+
+## Overview
+
+For the differential expression / differential translational efficiency modeling project, 
+I'm concerned that marginalizing the discrete parameters representing per-tag
+null status damages the model's performance in identifying null tags. 
+
+To explore this, I implemented two simplified mixture models, each in two different ways:
+
+1. Marginalizing the discrete parameters representing class membership out of the model
+2. Retaining the discrete parameters representing class membership
+
+I compared estimated class probabilities and treatment effects between the 
+two implementations; they look quite similar, which I think is evidence against my concern.
+
+Creating this comparison felt helpful to me, and wasn't a lot of work. I'm thinking of continuing to compare a few more models with and without marginalization, increasing the similarity to
+the Poisson GLMM used for the DE / DTE model that's having problems. 
+
+## Simplified models
+
+Since I wanted to examine the effects of marginalization without the complicated
+features of the DE / DTE model, I implemented these two models: 
+
+1. Two-class mixture of Normals
+2. Two-class mixture of Normals with groups
+
+### Model 1
+
+The $i$'th observation may be affected by the treatment or not. The parameters
+$D_i$ represent whether or not $y_i$ is affected; if $D_i = 0$, the treatment
+has no effect on $y_i$. 
+
+$y_i \sim Normal(\mu_i, \sigma^2)$
+
+$\mu_i = \beta_0 + x_i * \beta_1 * D_i$
+
+### Model 2
+
+Extends model 1 by adding groups (imitating tags in the DE / DTE model). The 
+$g$'th group may be affected by the treatment or not. The $D_g$ parameters represent
+whether or not the treated observations in group $g$ are affected. 
+
+$y_{gi} \sim Normal(\mu_{gi}, \sigma^2)$
+
+$\mu_{gi} = \beta_{g0} + x_i * \beta_{g1} * D_g$
+
+## Comparisons of the implementations
+
+### Model 1
+
+```{r}
+#| echo: false
+gg1 <- readRDS("../case_study_1/data/gg1.rds")
+gg1
+```
+
+### Model 2
+
+```{r}
+#| echo: false
+gg1 <- readRDS("../case_study_2/data/gg1.rds")
+gg1
+gg2 <- readRDS("../case_study_2/data/gg2.rds")
+gg2
+```
