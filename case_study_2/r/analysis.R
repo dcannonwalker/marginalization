@@ -14,9 +14,9 @@ jags_smry <- summary(jags_post)
 
 stan_p <- stan_smry %>%
   filter(grepl("^p", variable)) %>%
-  select(mean, sd)
-jags_p <- jags_smry$statistics[1:G, 1:2]
-colnames(jags_p) <- c("mean", "sd")
+  select(mean, median, sd)
+jags_p <- cbind(jags_smry$statistics[1:G, 1:2], jags_smry$quantiles[1:G, 3])
+colnames(jags_p) <- c("mean", "sd", "median")
 p_df <- rbind(stan_p, jags_p) %>%
   mutate(model = rep(c("stan", "jags"), each = G),
          variable = rep(paste0("p[", 1:G, "]"), 2),
@@ -33,11 +33,11 @@ b_df <- rbind(stan_b, jags_b) %>%
   mutate(model = rep(c("stan", "jags"), each = 2 * G),
          variable = rep(rep(c("b0", "b1"), each = G), 2),
          true_class = rep(sim_list$D_g, 4),
-         est_class = c(rep(p_df$mean[1:1000], 2), rep(p_df$mean[1001:2000], 2)), 
+         est_class = c(rep(p_df$mean[1:200], 2), rep(p_df$mean[201:400], 2)), 
          true = rep(c(sim_list$b0_g, sim_list$b1_g * sim_list$D_g), 2)) %>%
   mutate(mean = if_else(variable == "b1", mean * est_class, mean))
 
-gg1 <- ggplot(p_df, aes(b1, mean, color = model)) + geom_point(alpha = 0.2) + 
+gg1 <- ggplot(p_df, aes(b1, median, color = model)) + geom_point(alpha = 0.2) + 
   theme_minimal() + 
   ggtitle("Comparison of class probabilities", subtitle = "JAGS model without marginalization, Stan model with marginalization") + 
   xlab("True treatment effect") +
@@ -55,3 +55,36 @@ gg2 <- ggplot(b_df, aes(true, mean, color = model)) +
 gg2
 saveRDS(gg1, "case_study_2/data/gg1.rds")
 saveRDS(gg2, "case_study_2/data/gg2.rds")
+
+temp <- p_df %>%
+  arrange(mean)
+apply(sim_list$y_g[c(148, 49), ], 1, function(r) {
+  print(r)
+  c(untr = mean(r[1:10]), 
+    tr = mean(r[11:20]))
+})
+
+sim_list$x_g
+p_df %>% 
+  group_by(variable) %>%
+  mutate(diff = mean[model == "jags"] - mean[model == "stan"]) %>%
+  arrange(-abs(diff)) %>%
+  print(n = 100)
+
+head(stan_smry)
+stan_smry %>%
+  filter(grepl("148", variable)) %>%
+  print(n = 100)
+
+p_draws <- extract_variable_array(stan_post, "p")
+lp_draws <- extract_variable_array(stan_post, "lp")
+b0_draws <- extract_variable_array(stan_post, "b0")
+b1_draws <- extract_variable_array(stan_post, "b1")
+str(b0_draws)
+g = 148
+tibble(p = p_draws[, , g], lp_draws[, , 148, ],
+       b1 = b1_draws[, , g], b0 = b0_draws[, , g]) %>%
+  arrange(-p) %>%
+  print(n = 100)
+
+hist(b1_draws[, , g])

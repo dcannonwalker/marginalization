@@ -1,12 +1,12 @@
 set.seed(1)
-G <- 1000
+G <- 200
 N_g <- 20 
 x_g <- rep(c(0, 1), each = N_g / 2)
 pi0 <- 0.5
 D_g <- sample(c(0, 1), G, replace = TRUE, prob = c(pi0, 1 - pi0))
 b0_g <- rnorm(G)
-b1_g <- rnorm(G)
-tau <- 5
+b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (4 + rnorm(G))
+tau <- 10 
 mu_g <- cbind(b0_g, b0_g + D_g * x_g * b1_g)
 x <- rep(x_g, G)
 D <- rep(D_g, each = N_g)
