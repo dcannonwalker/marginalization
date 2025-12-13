@@ -26,4 +26,4 @@ sim_list <- list(y = y, y_g = y_g, tau = tau, x = x, x_g = x_g, pi0 = pi0, N_g =
                  sig = sqrt(1 / tau), D = D, 
                  b0 = b0, b1 = b1,
                  D_g = D_g, b0_g = b0_g, b1_g = b1_g)
-saveRDS(sim_list, "cs5/data/sim_list.rds")
+saveRDS(sim_list, "cs6/data/sim_list.rds")

@@ -15,7 +15,7 @@ data {
   int<lower=0> G;
   array[G, N_g] real y_g;
   vector[N_g] x_g;
-  real<lower=0> sig;
+  // real<lower=0> sig;
   real<lower=0, upper=1> pi0;
 }
 
@@ -30,6 +30,7 @@ transformed data {
 parameters {
   vector[G] b0;
   vector[G] b1; 
+  real<lower=0> sig;
 }
 
 transformed parameters {

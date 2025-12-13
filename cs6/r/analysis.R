@@ -4,13 +4,18 @@ library(ggplot2)
 library(rjags)
 library(cmdstanr)
 
-sim_list <- readRDS("cs5/data/sim_list.rds")
+sim_list <- readRDS("cs6/data/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs5/data/stan_fit.rds")
-jags_post <- readRDS("cs5/data/jags_fit.rds")
+stan_post <- readRDS("cs6/data/stan_fit.rds")
+jags_post <- readRDS("cs6/data/jags_fit.rds")
 
 stan_smry <- stan_post$summary()
 jags_smry <- summary(jags_post)
+
+jags_sig <- jags_post[[1]][, which(dimnames(jags_post[[1]])[[2]] == "sig")]
+stan_sig <- extract_variable_matrix(stan_post, "sig")
+plot(density(jags_sig))
+plot(density(stan_sig))
 
 stan_p <- stan_smry %>%
   filter(grepl("^p", variable)) %>%
@@ -54,5 +59,5 @@ gg2 <- ggplot(b_df, aes(true, mean, color = model)) +
   xlab("True parameter value") +
   ylab("Estimated parameter value")
 gg2
-saveRDS(gg1, "cs5/data/gg1.rds")
-saveRDS(gg2, "cs5/data/gg2.rds")
+saveRDS(gg1, "cs6/data/gg1.rds")
+saveRDS(gg2, "cs6/data/gg2.rds")
