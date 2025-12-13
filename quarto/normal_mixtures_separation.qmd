@@ -1,0 +1,94 @@
+---
+title: "Mixture of normals with strong separation"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: true
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+ 
+## Setup
+
+The general form of the model is:
+
+$$ 
+\begin{align}
+y_{gi} &\sim N(\mu_{gi}, \sigma_g^2), \\
+\mu_{gi} &= \beta_{g0} + x_i(\beta_{g1}D_g),
+\end{align}
+$$
+for $g = 1, \dots, G$ and $i = 1, \dots, N_g$.
+
+In all cases, true values for the regression parameters are drawn from: 
+$$
+\begin{align}
+\beta_{g0} &\sim N(0, 1) ~\text{and}~\\
+\beta_{g1} &\sim 0.5 N(-M, 1) + 0.5 N(M, 1).
+\end{align}
+$$
+To visualize the simulating distribution for $\beta_{g1}$:
+
+```{r}
+#| echo: false
+p <- readRDS("cs4_1/data/sim_b1.rds")
+p
+```
+
+$G = 50, N_g = 10$ and $x_i = 0, i \leq 5$ and $1$ otherwise. 
+
+- Model 1: $M = 10$, $D_g = 1$ and $\sigma_g^2 = \sigma^2 = 0.1, ~ \forall ~ g$
+- Model 2: $M = 4$
+- Model : $M = 4$, $D_g \sim bern(0.5)$ and $\sigma_g^2 = \sigma^2 \ = 0.1, ~ \forall ~ g$
+- Model : $D_g \sim bern(0.5)$ and $\sigma_g^2 = \sigma^2, ~ \forall ~ g$, and 
+$\sigma^2$ is unknown (uniform prior)
+- Model : $D_g \sim bern(0.5)$ and $\sigma_g^2 \sim \text{half-}t(\dots), ~ \forall ~ g$
+
+## Model 1
+
+The only thing this model has to do is estimate the $\beta_{g0}$ and $\beta_{g1}$
+parameters, since the variance is known and $D_g = 1$ (i.e. no classification problem). 
+
+```{r}
+#| echo: false
+gg2 <- readRDS("cs4_1/data/gg2.rds")
+gg2
+```
+
+## Model 2
+```{r}
+#| echo: false
+gg2 <- readRDS("cs4_2/data/gg2.rds")
+gg2
+```
+
+## Model 3
+
+Introduces the two-class component of the problem. M = 10
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs5_1/data/gg1.rds")
+gg2 <- readRDS("cs5_1/data/gg2.rds")
+gg1
+gg2
+```
+
+## Model 4
+Introduces the two-class component of the problem. M = 4
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs5_2/data/gg1.rds")
+gg2 <- readRDS("cs5_2/data/gg2.rds")
+gg1
+gg2
+```
+

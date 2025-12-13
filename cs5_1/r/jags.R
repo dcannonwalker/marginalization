@@ -10,13 +10,13 @@ for (i in 1:N) {
 # priors
 for (i in 1:G) {
   D[i] ~ dbern(pi0)
-  b0[i] ~ dnorm(0, 10)
-  b1[i] ~ dnorm(0, 10)
+  b0[i] ~ dnorm(0, 1 / 10)
+  b1[i] ~ dnorm(0, 1 / 10)
 }
 # expects y, tau, pi0, x, G, G_i, N
 }"
 
-sim_list <- readRDS("case_study_2/data/sim_list.rds")
+sim_list <- readRDS("cs5/data/sim_list.rds")
 jags_names <- c("y", "tau", "x", "pi0", "N", "G", "G_i")
 data_list <- sim_list[jags_names]
 model <- jags.model(file = textConnection(model_string), data = data_list)
@@ -24,5 +24,5 @@ update(model, n.iter = 1e4)
 vn <- c("b0", "b1", "D")
 # vn <- "D"
 post <- coda.samples(model, variable.names = vn, n.iter = 1e3)
-saveRDS(post, "case_study_2/data/jags_fit.rds")
+saveRDS(post, "cs5/data/jags_fit.rds")
 

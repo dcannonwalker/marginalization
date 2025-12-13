@@ -3,12 +3,12 @@ G <- 50
 N_g <- 10
 x_g <- rep(c(0, 1), each = N_g / 2)
 pi0 <- 0.5
+M <- 4
 D_g <- sample(c(0, 1), G, replace = TRUE, prob = c(pi0, 1 - pi0))
 b0_g <- rnorm(G)
-b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (4 + rnorm(G, sd = 0.2))
+b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (M + rnorm(G, sd = 1))
 tau <- 10 
 mu_g <- cbind(b0_g, b0_g + D_g * x_g * b1_g)
-# plot(mu_g[, 1], mu_g[, 2])
 x <- rep(x_g, G)
 D <- rep(D_g, each = N_g)
 b1 <- rep(b1_g, each = N_g)
@@ -21,12 +21,10 @@ for (i in 1:G) {
   y_g[i, ] <- y[G_i == i]
 }
 
-head(y, 21)
-head(y_g, 3)
 sim_list <- list(y = y, y_g = y_g, tau = tau, x = x, x_g = x_g, pi0 = pi0, N_g = N_g, G = G, 
                  G_i = G_i, 
                  N = G * N_g, 
                  sig = sqrt(1 / tau), D = D, 
                  b0 = b0, b1 = b1,
                  D_g = D_g, b0_g = b0_g, b1_g = b1_g)
-saveRDS(sim_list, "case_study_2/data/sim_list.rds")
+saveRDS(sim_list, "cs5/data/sim_list.rds")

@@ -49,8 +49,8 @@ transformed parameters {
 // 'y' to be normally distributed with mean 'mu'
 // and standard deviation 'sigma'.
 model {
-  b0 ~ normal(0, 10);
-  b1 ~ normal(0, 10);
+  b0 ~ normal(0, sqrt(10));
+  b1 ~ normal(0, sqrt(10));
   target += sum(lse);
 }
 
