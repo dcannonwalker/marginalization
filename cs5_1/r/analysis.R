@@ -4,10 +4,10 @@ library(ggplot2)
 library(rjags)
 library(cmdstanr)
 
-sim_list <- readRDS("cs5/data/sim_list.rds")
+sim_list <- readRDS("cs5_1/data/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs5/data/stan_fit.rds")
-jags_post <- readRDS("cs5/data/jags_fit.rds")
+stan_post <- readRDS("cs5_1/data/stan_fit.rds")
+jags_post <- readRDS("cs5_1/data/jags_fit.rds")
 
 stan_smry <- stan_post$summary()
 jags_smry <- summary(jags_post)
@@ -54,5 +54,5 @@ gg2 <- ggplot(b_df, aes(true, mean, color = model)) +
   xlab("True parameter value") +
   ylab("Estimated parameter value")
 gg2
-saveRDS(gg1, "cs5/data/gg1.rds")
-saveRDS(gg2, "cs5/data/gg2.rds")
+saveRDS(gg1, "cs5_1/data/gg1.rds")
+saveRDS(gg2, "cs5_1/data/gg2.rds")

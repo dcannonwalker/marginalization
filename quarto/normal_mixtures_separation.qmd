@@ -98,7 +98,8 @@ gg2
 
 ## Model 5
 
-Introduces variance estimation
+Introduces variance estimation, i.e. estimation of $\sigma^2$ instead of 
+assuming the correct value
 
 ```{r}
 #| echo: false
@@ -108,4 +109,23 @@ gg3 <- readRDS("cs6/data/gg3.rds")
 gg1
 gg2
 gg3
+```
+
+## Model 6
+
+Introduces estimation of variance parameters for $\beta_{g0}$ and $\beta_{g1}$,
+instead of assuming both are 1
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs7/data/gg1.rds")
+gg2 <- readRDS("cs7/data/gg2.rds")
+gg3 <- readRDS("cs7/data/gg3.rds")
+gg4 <- readRDS("cs7/data/gg4.rds")
+gg5 <- readRDS("cs7/data/gg5.rds")
+gg1
+gg2
+gg3
+gg4
+gg5
 ```

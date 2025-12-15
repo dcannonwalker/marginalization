@@ -15,3 +15,4 @@ renv::install("quarto")
 
 renv::install("rjags")
 renv::install("usethis")
+renv::install("mvtnorm")
