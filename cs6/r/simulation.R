@@ -3,9 +3,10 @@ G <- 50
 N_g <- 10
 x_g <- rep(c(0, 1), each = N_g / 2)
 pi0 <- 0.5
+M <- 4
 D_g <- sample(c(0, 1), G, replace = TRUE, prob = c(pi0, 1 - pi0))
 b0_g <- rnorm(G)
-b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (4 + rnorm(G, sd = 0.2))
+b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (M + rnorm(G, sd = 1))
 tau <- 10 
 mu_g <- cbind(b0_g, b0_g + D_g * x_g * b1_g)
 x <- rep(x_g, G)

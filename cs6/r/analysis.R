@@ -61,3 +61,20 @@ gg2 <- ggplot(b_df, aes(true, mean, color = model)) +
 gg2
 saveRDS(gg1, "cs6/data/gg1.rds")
 saveRDS(gg2, "cs6/data/gg2.rds")
+
+sig <- tibble(
+  draw = c(seq(1, length(stan_sig)), seq(1, length(jags_sig))),
+  model = c(rep("stan", length(stan_sig)), rep("jags", length(jags_sig))),
+  value = c(stan_sig, jags_sig)
+)
+
+true_sig <- sqrt(1/10)
+gg3 <- ggplot(sig, aes(value, fill = model)) + 
+  geom_density(alpha = 0.6) + 
+  geom_vline(xintercept = true_sig, ) +
+  theme_minimal() + 
+  ggtitle("Posterior density for sigma")  +
+  xlab("value") +
+  annotate(x=true_sig,y=+Inf,label="True sigma",vjust=2,geom="label")
+gg3
+saveRDS(gg3, "cs6/data/gg3.rds")

@@ -54,7 +54,7 @@ $\sigma^2$ is unknown (uniform prior)
 ## Model 1
 
 The only thing this model has to do is estimate the $\beta_{g0}$ and $\beta_{g1}$
-parameters, since the variance is known and $D_g = 1$ (i.e. no classification problem). 
+parameters, since the variance is known and $D_g = 1$ (i.e. no classification problem). M = 10
 
 ```{r}
 #| echo: false
@@ -63,6 +63,9 @@ gg2
 ```
 
 ## Model 2
+
+M = 4
+
 ```{r}
 #| echo: false
 gg2 <- readRDS("cs4_2/data/gg2.rds")
@@ -82,6 +85,7 @@ gg2
 ```
 
 ## Model 4
+
 Introduces the two-class component of the problem. M = 4
 
 ```{r}
@@ -92,3 +96,16 @@ gg1
 gg2
 ```
 
+## Model 5
+
+Introduces variance estimation
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs6/data/gg1.rds")
+gg2 <- readRDS("cs6/data/gg2.rds")
+gg3 <- readRDS("cs6/data/gg3.rds")
+gg1
+gg2
+gg3
+```
