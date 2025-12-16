@@ -129,3 +129,43 @@ gg3
 gg4
 gg5
 ```
+
+## Model 7
+
+Adds paired random effects
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs8/data/gg1.rds")
+gg2 <- readRDS("cs8/data/gg2.rds")
+gg3 <- readRDS("cs8/data/gg3.rds")
+gg4 <- readRDS("cs8/data/gg4.rds")
+gg5 <- readRDS("cs8/data/gg5.rds")
+gg6 <- readRDS("cs8/data/gg6.rds")
+gg1
+gg2
+gg3
+gg4
+gg5
+gg6
+```
+
+## Model 8
+
+Switches to Poisson response
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs9/data/gg1.rds")
+gg2 <- readRDS("cs9/data/gg2.rds")
+# gg3 <- readRDS("cs9/data/gg3.rds")
+gg4 <- readRDS("cs9/data/gg4.rds")
+gg5 <- readRDS("cs9/data/gg5.rds")
+gg6 <- readRDS("cs9/data/gg6.rds")
+gg1
+gg2
+# gg3
+gg4
+gg5
+gg6
+```

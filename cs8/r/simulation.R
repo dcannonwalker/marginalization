@@ -22,9 +22,9 @@ z_g <- model.matrix(~0 + as.factor(pairs))
 sig_u <- 1 
 u_g <- mvtnorm::rmvnorm(G, mean = rep(0, N_g / 2), sigma = diag(rep(sig_u, N_g / 2)))
 z <- kronecker(diag(rep(1, G)), z_g)
-u <- c(u_g)
+u <- c(t(u_g))
 # check that the ordering is correct: 
-# c(z_g %*% t(u))a # looks right
+z %*% u # looks right
 
 # mean
 mu_g <- cbind(b0_g, b0_g + D_g * x_g * b1_g)
@@ -45,5 +45,6 @@ sim_list <- list(y = y, y_g = y_g, tau = tau, x = x, x_g = x_g, pi0 = pi0, N_g =
                  sig = sqrt(1 / tau), D = D, 
                  b0 = b0, b1 = b1,
                  D_g = D_g, b0_g = b0_g, b1_g = b1_g,
-                 u = u, u_g = u_g, z_g = z_g, z = z, sig_u = sig_u, N_u = G * N_g / 2)
+                 u = u, u_g = u_g, z_g = z_g, z = z, sig_u = sig_u, N_u = G * N_g / 2,
+                 N_u_g = N_g / 2)
 saveRDS(sim_list, "cs8/data/sim_list.rds")

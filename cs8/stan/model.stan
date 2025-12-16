@@ -12,12 +12,14 @@
 // The input data is a vector 'y' of length 'N'.
 data {
   int<lower=0> N_g;
+  int<lower=0> N_u_g;
   int<lower=0> G;
   array[G, N_g] real y_g;
   vector[N_g] x_g;
-  array[N_g, N_g / 2] z_g;
+  matrix[N_g, N_u_g] z_g;
   // real<lower=0> sig;
   real<lower=0, upper=1> pi0;
+  real<lower=0> sig_u;
 }
 
 transformed data {
@@ -31,7 +33,7 @@ transformed data {
 parameters {
   vector[G] b0;
   vector[G] b1; 
-  array
+  array[G] vector[N_u_g] u_g;
   real<lower=0> sig;
   real<lower=0> sig_b0;
   real<lower=0> sig_b1;
@@ -41,9 +43,11 @@ transformed parameters {
   array[G] vector[2] lp;
   array[G, 2] vector[N_g] mu;
   vector[G] lse;
+  vector[G] u_contr;
   for (i in 1:G) {
+   u_contr[i] = normal_lpdf(u_g[i, ] | 0, sig_u);
    for (d in 1:2) {
-     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i];
+     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + z_g * u_g[i];
      lp[i, d] = log_p_i[d] + normal_lpdf(y_g[i] | mu[i, d], sig);
    } 
    lse[i] = log_sum_exp(lp[i]);
@@ -57,6 +61,7 @@ model {
   // sig, sig_b0, sig_b1 all have a uniform improper prior on the positive reals
   b0 ~ normal(0, sig_b0);
   b1 ~ normal(0, sig_b1);
+  target += sum(u_contr);
   target += sum(lse);
 }
 
