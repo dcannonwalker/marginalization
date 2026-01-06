@@ -1,0 +1,281 @@
+---
+title: "Staircase of Models"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: true
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+ 
+# Intro
+
+## Context
+
+I compared the HMC - NUTS implementation WITH marginalization to the Gibbs sampler
+implementation WITHOUT marginalization for a sequence of increasingly complex models. 
+
+I think the last big component of the full model that I haven't included in this series
+is normalization factors. 
+
+I don't see a huge difference between the two implementations for any of these models. 
+There aren't ANY false positives for either implementation, in the sense that the 
+true null genes all have a lower posterior probability of non-null than any of the true non-null genes. 
+
+So, what explanations for the poor performance I've seen in my more complicated simulation studies remain untested? I can think of: 
+
+1. Normalization factors
+2. Differences in how the data is simulated, maybe:
+   1. Smaller treatment effect sizes (minimum 0.7 instead of ~2.5)
+   2. Based on parameters estimated from real data set
+   3. Counts drawn from the negative binomial with lots of dispersion
+
+## Setup
+
+The first set of models use a Normal response, and have the general form:
+
+$$ 
+\begin{align}
+y_{gi} &\sim N(\mu_{gi}, \sigma_g^2), \\
+\mu_{gi} &= \beta_{g0} + x_i(\beta_{g1}D_g) + z_i^Tu_g,
+\end{align}
+$$
+although several models do not actually include the random effects $u_{gi}$;
+the second set of models switches to a Poisson response:
+
+$$ 
+\begin{align}
+y_{gi} &\sim \text{Poisson}(\text{exp}(\mu_{gi})), \\
+\mu_{gi} &= \beta_{g0} + x_i(\beta_{g1}D_g) + z_i^Tu_g,
+\end{align}
+$$
+for $g = 1, \dots, G$ and $i = 1, \dots, N_g$.
+
+In all cases, true values for the regression parameters are drawn from: 
+$$
+\begin{align}
+\beta_{g0} &\sim N(M_0, 1), \\
+\beta_{g1} &\sim 0.5 N(-M_1, 1) + 0.5 N(M_1, 1),  ~\text{and}~\\
+u_{gj} &\sim N(0, 1) ~\text{(if random effects are included)}.
+\end{align}
+$$
+To visualize the simulating distribution for $\beta_{g1}$:
+
+```{r}
+#| echo: false
+p <- readRDS("cs4_1/data/sim_b1.rds")
+p
+```
+
+$G = 50, N_g = 10$ and $x_i = 0, i \leq 5$ and $1$ otherwise. 
+
+Where applicable, the random effects design represents paired samples, one in 
+each treatment condition:
+
+```{r}
+#| echo: false
+sample <- factor(rep(1:5, 2))
+z_g <- model.matrix(~0+sample)
+tibble::as_tibble(z_g)
+```
+
+### Model list
+
+- Model 1.1: $M_0 = 0$, $M_1 = 4$, $D_g \sim bern(0.5)$ and known $\sigma_g^2 = \sigma^2 \ = 0.1, ~ \forall ~ g$;
+$\beta_g0$ and $\beta_g1$ are assigned hyperprior $N(0, 10)$
+- Model 1.2: like 1.1, but $\sigma_g^2 = \sigma^2, ~ \forall ~ g$, and 
+$\sigma^2$ is unknown (uniform prior)
+- Model 1.3: like 1.2, but the variance hyperparameters for $\beta_{g0}$ and
+$\beta_{g1}$ are unknown (uniform priors on both)
+- Model 1.4: like 1.3, but includes paired random effects
+- Model 2.1: like 1.4, but response is Poisson instead of Normal and $M_0 = 4$
+- Model 2.2: like 2.1, but $\beta_{g1}$ is assigned a two component Normal mixture
+prior and the mean hyperparameter for $\beta_{g0}$ and the two mean hyperparameters 
+for $\beta_{g1}$ are unknown
+- Model 2.3: like 2.2, with the addition of sample-specific normalization factors
+
+# Model set 1: Normal response
+
+## Model 1.1
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs5_1/data/gg1.rds")
+gg2 <- readRDS("cs5_1/data/gg2.rds")
+gg1
+gg2
+```
+
+## Model 1.2
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs6/data/gg1.rds")
+gg2 <- readRDS("cs6/data/gg2.rds")
+gg3 <- readRDS("cs6/data/gg3.rds")
+gg1
+gg2
+gg3
+```
+
+## Model 1.3
+
+Introduces estimation of variance parameters for $\beta_{g0}$ and $\beta_{g1}$,
+instead of assuming both are 1
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs7/data/gg1.rds")
+gg2 <- readRDS("cs7/data/gg2.rds")
+gg3 <- readRDS("cs7/data/gg3.rds")
+gg4 <- readRDS("cs7/data/gg4.rds")
+gg5 <- readRDS("cs7/data/gg5.rds")
+gg1
+gg2
+gg3
+gg4
+gg5
+```
+
+## Model 1.4
+
+Adds paired random effects
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs8/data/gg1.rds")
+gg2 <- readRDS("cs8/data/gg2.rds")
+gg3 <- readRDS("cs8/data/gg3.rds")
+gg4 <- readRDS("cs8/data/gg4.rds")
+gg5 <- readRDS("cs8/data/gg5.rds")
+gg6 <- readRDS("cs8/data/gg6.rds")
+gg1
+gg2
+gg3
+gg4
+gg5
+gg6
+```
+
+# Model set 2: Poisson response
+
+## Model 2.1 
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs9/data/gg1.rds")
+gg2 <- readRDS("cs9/data/gg2.rds")
+# gg3 <- readRDS("cs9/data/gg3.rds")
+gg4 <- readRDS("cs9/data/gg4.rds")
+gg5 <- readRDS("cs9/data/gg5.rds")
+gg6 <- readRDS("cs9/data/gg6.rds")
+gg1
+gg2
+# gg3
+gg4
+gg5
+gg6
+```
+
+## Model 2.2
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs10/data/gg1.rds")
+gg2 <- readRDS("cs10/data/gg2.rds")
+# gg3 <- readRDS("cs10/data/gg3.rds")
+gg4 <- readRDS("cs10/data/gg4.rds")
+gg5 <- readRDS("cs10/data/gg5.rds")
+gg6 <- readRDS("cs10/data/gg6.rds")
+gg7 <- readRDS("cs10/data/gg7.rds")
+gg8 <- readRDS("cs10/data/gg8.rds")
+gg9 <- readRDS("cs10/data/gg9.rds")
+gg1
+gg2
+# gg3
+gg4
+gg5
+gg6
+gg7
+gg8
+gg9
+```
+
+### Reduce $M_1$ to 2...
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs11/data/gg1.rds")
+gg2 <- readRDS("cs11/data/gg2.rds")
+# gg3 <- readRDS("cs11/data/gg3.rds")
+gg4 <- readRDS("cs11/data/gg4.rds")
+gg5 <- readRDS("cs11/data/gg5.rds")
+gg6 <- readRDS("cs11/data/gg6.rds")
+gg7 <- readRDS("cs11/data/gg7.rds")
+gg8 <- readRDS("cs11/data/gg8.rds")
+gg9 <- readRDS("cs11/data/gg9.rds")
+gg1
+gg2
+# gg3
+gg4
+gg5
+gg6
+gg7
+gg8
+gg9
+```
+
+## Model 2.3
+
+```{r}
+#| echo: false
+gg1 <- readRDS("cs12/data/gg1.rds")
+gg2 <- readRDS("cs12/data/gg2.rds")
+# gg3 <- readRDS("cs12/data/gg3.rds")
+gg4 <- readRDS("cs12/data/gg4.rds")
+gg5 <- readRDS("cs12/data/gg5.rds")
+gg6 <- readRDS("cs12/data/gg6.rds")
+gg7 <- readRDS("cs12/data/gg7.rds")
+gg8 <- readRDS("cs12/data/gg8.rds")
+gg9 <- readRDS("cs12/data/gg9.rds")
+gg1
+gg2
+# gg3
+gg4
+gg5
+gg6
+gg7
+gg8
+gg9
+```
+
+# Extra stuff
+
+## Model with no point mass at 0
+
+The only thing this model has to do is estimate the $\beta_{g0}$ and $\beta_{g1}$
+parameters, since the variance is known and $D_g = 1$ (i.e. no classification problem). 
+
+### M = 10
+
+```{r}
+#| echo: false
+gg2 <- readRDS("cs4_1/data/gg2.rds")
+gg2
+```
+
+
+### M = 4
+
+```{r}
+#| echo: false
+gg2 <- readRDS("cs4_2/data/gg2.rds")
+gg2
+```

@@ -20,6 +20,8 @@ data {
   // real<lower=0> sig;
   real<lower=0, upper=1> pi0;
   real<lower=0> sig_u;
+  real<lower=0> sig_S;
+  matrix[N_g, N_g] sample_design_g;
 }
 
 transformed data {
@@ -33,8 +35,12 @@ transformed data {
 parameters {
   vector[G] b0;
   vector[G] b1; 
+  vector[N_g] S;
   array[G] vector[N_u_g] u_g;
   real<lower=0> sig;
+  real mu_b11;
+  real mu_b12;
+  real mu_b0;
   real<lower=0> sig_b0;
   real<lower=0> sig_b1;
 }
@@ -44,10 +50,13 @@ transformed parameters {
   array[G, 2] vector[N_g] mu;
   vector[G] lse;
   vector[G] u_contr;
+  vector[G] b1_contr;
   for (i in 1:G) {
    u_contr[i] = normal_lpdf(u_g[i, ] | 0, sig_u);
+   b1_contr[i] = log_sum_exp(normal_lpdf(b1[i] | mu_b11, sig_b1),
+                             normal_lpdf(b1[i] | mu_b12, sig_b1));
    for (d in 1:2) {
-     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + z_g * u_g[i];
+     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + z_g * u_g[i] + sample_design_g * S;
      lp[i, d] = log_p_i[d] + poisson_log_lpmf(y_g[i] | mu[i, d]);
    } 
    lse[i] = log_sum_exp(lp[i]);
@@ -59,8 +68,12 @@ transformed parameters {
 // and standard deviation 'sigma'.
 model {
   // sig, sig_b0, sig_b1 all have a uniform improper prior on the positive reals
-  b0 ~ normal(0, sig_b0);
-  b1 ~ normal(0, sig_b1);
+  b0 ~ normal(mu_b0, sig_b0);
+  S ~ normal(0, sig_S);
+  mu_b11 ~ normal(0, sqrt(10));
+  mu_b12 ~ normal(0, sqrt(10));
+  mu_b0 ~ normal(0, sqrt(10));
+  target += sum(b1_contr);
   target += sum(u_contr);
   target += sum(lse);
 }

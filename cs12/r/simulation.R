@@ -5,10 +5,9 @@ G <- 50
 N_g <- 10
 
 # fixed effects and related
-
 x_g <- rep(c(0, 1), each = N_g / 2)
 pi0 <- 0.5
-M <- 4
+M <- 2
 D_g <- sample(c(0, 1), G, replace = TRUE, prob = c(pi0, 1 - pi0))
 b0_g <- rnorm(G, mean = 4)
 b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (M + rnorm(G, sd = 1))
@@ -21,27 +20,34 @@ b0 <- rep(b0_g, each = N_g)
 pairs <- rep(1:(N_g / 2), 2)
 z_g <- model.matrix(~0 + as.factor(pairs))
 sig_u <- 1 
-u_g <- mvtnorm::rmvnorm(G, mean = rep(0, N_g / 2), sigma = diag(rep(sig_u, N_g / 2)))
+u_g <- mvtnorm::rmvnorm(G, mean = rep(0, N_g / 2), sigma = diag(rep(sig_u^2, N_g / 2)))
 z <- kronecker(diag(rep(1, G)), z_g)
 u <- c(t(u_g))
 # check that the ordering is correct: 
 z %*% u # looks right
 
-# normalization factors 
+# normalization factors
 sig_S <- 0.2
 S <- rnorm(N_g, sd = sig_S)
-which_S_i <- rep(1:N_g, G)
-d_S <- model.matrix(~0 + factor(which_S_i))
-
+sample <- factor(1:10)
+sample_design_g <- model.matrix(~0+sample)
+sample_design <- kronecker(rep(1, G), sample_design_g)
+sample_effects_g <- sample_design_g %*% S
+sample_effects <- sample_design %*% S
 
 # mean
 mu_g <- cbind(b0_g, b0_g + D_g * x_g * b1_g)
-mu <- b0 + x * D * b1 + z %*% u
+mu_no_sample <- b0 + x * D * b1 + z %*% u
+mu <- mu_no_sample + sample_effects
+
+head(mu_no_sample)
+head(mu)
 
 # response
 y  <- rpois(N_g * G, lambda = exp(mu))
 y_g <- matrix(nrow = G, ncol = N_g)
 G_i <- rep(seq(1, G), each = N_g)
+S_i <- rep(1:10, G)
 for (i in 1:G) {
   y_g[i, ] <- y[G_i == i]
 }
@@ -53,5 +59,12 @@ sim_list <- list(y = y, y_g = y_g, x = x, x_g = x_g, pi0 = pi0, N_g = N_g, G = G
                  b0 = b0, b1 = b1,
                  D_g = D_g, b0_g = b0_g, b1_g = b1_g,
                  u = u, u_g = u_g, z_g = z_g, z = z, sig_u = sig_u, N_u = G * N_g / 2,
-                 N_u_g = N_g / 2)
-saveRDS(sim_list, "cs9/data/sim_list.rds")
+                 N_u_g = N_g / 2,
+                 mu_no_sample = mu_no_sample,
+                 sample_effects_g = sample_effects_g,
+                 sample_effects = sample_effects,
+                 sample_design_g = sample_design_g,
+                 sample_design = sample_design,
+                 S_i = S_i, 
+                 sig_S = sig_S)
+saveRDS(sim_list, "cs12/data/sim_list.rds")
