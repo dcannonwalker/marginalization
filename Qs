@@ -1,0 +1,29 @@
+normfactors, jags vs. stan
+- questions from analysis: why is jags so bad? 
+  - to explore
+    - no random effects
+    - more genes per sample
+    - larger sample effects
+
+comparing random effects, stan vs. edgeR
+- how do we compare pair effect estimates between models with different design matrices? 
+  - edgeR uses full rank model matrix
+    - the first pair is rolled up into the overall baseline level, i.e. we don't estimate a pair effect separate from the intercept for this pair
+  - stan uses leq full rank model matrix, and so estimates one more random effect
+    - unique effect for each pair, in this case
+- ideas:
+  - predicted values for each trt:pair combination
+  - differencing coef estimates from edgeR might result in an estimate that is 1:1 comparable to stan for SOME of the pair effects (but not the first one, right?)
+  
+stan vs. edgeR
+- need to make the simulated data set more difficult
+- need to explore normfactors questions
+
+what would I like in our discussion for next Tuesday? 
+- stan vs. edgeR comparison
+  - simulated data that is more difficult for the models
+  - also more tags
+  - also real data based if possible
+  - show differences in random effect estimates (would like to find a reason to prefer stan's abilities here) 
+  - show differences in fixed effect estimates (looks promising for stan)
+  - show differences in FDR, ROC (looks promising for stan)

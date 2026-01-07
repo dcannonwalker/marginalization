@@ -43,7 +43,7 @@ plot(density(stan_mu_b12))
 jags_S <- jags_post[[1]][, which(grepl("S", dimnames(jags_post[[1]])[[2]]))]
 stan_S <- extract_variable_array(stan_post, variable = "S")[, 1, ]
 plot(density(jags_S[, 5]))
-plot(density(stan_S[, 1]))
+plot(density(stan_S[, 8]))
 
 # ================ p ===================
 
@@ -213,22 +213,11 @@ saveRDS(gg9, "cs12/data/gg9.rds")
 ## S
 S <- bind_rows(tibble::as_tibble(jags_S) %>%
   mutate(draw = row_number(), model = "jags") %>%
-  tidyr::pivot_longer(cols = -c(draw, model)),
+  pivot_longer(cols = -c(draw, model)),
 tibble::as_tibble(stan_S) %>% 
   purrr::set_names(paste0("S[", 1:10, "]")) %>%
   mutate(draw = row_number(), model = "stan") %>%
-  tidyr::pivot_longer(cols = -c(draw, model)))
-true_S <- tibble(name = paste0("S[", 1:10, "]"),  true = sim_list$sample_effects_g[, 1])
-S <- left_join(S, true_S) %>%
-  mutate(sample_number = as.numeric(stringr::str_extract(name, "\\d+")))
-
-ggplot(S, aes(value, fill = model)) +
-  geom_density(alpha = 0.6) + 
-  geom_vline(aes(xintercept = true)) + 
-  facet_wrap(.~sample_number, ncol = 2) +
-  theme_minimal() + 
-  ggtitle("Posterior density for log normfactors")
-  
+  pivot_longer(cols = -c(draw, model)))
 gg10 <- ggplot(S, aes(value, fill = model)) + 
   geom_density(alpha = 0.6) + 
   geom_vline(xintercept = c(-2, 2), ) +

@@ -1,6 +1,6 @@
 library(edgeR)
 set.seed(5)
-sim_list <- readRDS("cs12/data/sim_list.rds")
+sim_list <- readRDS("cs_eR1/data/sim_list.rds")
 sim_list$y_g
 edgeR::edgeRUsersGuide()
 dgel <- DGEList(counts = sim_list$y_g, group = sim_list$x_g)
@@ -26,7 +26,7 @@ fit <- glmFit(dgel, design)
 lrt <- glmLRT(fit, coef = 2)
 tt <- topTags(lrt, n = 50, sort.by = "none")
 
-saveRDS(list(fit = fit, lrt = lrt, tt = tt), file = "cs12/data/edgeR_fit.rds")
+saveRDS(list(fit = fit, lrt = lrt, tt = tt), file = "cs_eR1/data/eR_fit.rds")
 
 # extras
 # plotMDS(dgel)

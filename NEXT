@@ -1,0 +1,5 @@
+make a harder simulation
+- copy the cs_eR1 dir
+- modify the simulation.R script
+  - bring the simulated trt effects closer to 0
+- run the analysis2.R script and check the outputs
