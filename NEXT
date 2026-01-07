@@ -1,5 +1,7 @@
-make a harder simulation
-- copy the cs_eR1 dir
-- modify the simulation.R script
-  - bring the simulated trt effects closer to 0
-- run the analysis2.R script and check the outputs
+attempt3: smaller pi0
+if it's dialed in, move to larger G (maybe launch one tonight if you can)
+outline discussion notes: 
+- make a quarto doc
+- set it up with the basic stuff
+- outline what you've experimented with
+- placeholders for plots and tables

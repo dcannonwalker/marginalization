@@ -45,10 +45,10 @@ library(ggplot2)
 library(cmdstanr)
 
 # data
-sim_list <- readRDS("cs_eR1/data/sim_list.rds")
+sim_list <- readRDS("cs_eR2/data/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs_eR1/data/stan_fit.rds")
-eR_fit <- readRDS("cs_eR1/data/edgeR_fit.rds")
+stan_post <- readRDS("cs_eR2/data/stan_fit.rds")
+eR_fit <- readRDS("cs_eR2/data/eR_fit.rds")
 stan_smry <- stan_post$summary()
 
 # true nulls
@@ -70,12 +70,11 @@ pms <- calc_perf_metrics(ps, tn, model = "stan", fdr_mtd = "bfdr")
 
 pm <- rbind(pme, pms)
 
-ggplot(pm, aes(fpr, tpr, color = model)) + 
+roc_plot <- ggplot(pm, aes(fpr, tpr, color = model)) + 
   geom_line() +
-  theme_minimal() +
-  
-  facet_wrap(.~model)
-ggplot(pm, aes(tfdr, nfdr, color = model)) + 
+  theme_minimal() 
+  # facet_wrap(.~model)
+fdr_plot <- ggplot(pm, aes(tfdr, nfdr, color = model)) + 
   geom_line() + 
   theme_minimal() +
   coord_fixed() + 
@@ -93,8 +92,13 @@ b_df <- rbind(stan_b, eR_b) %>%
   mutate(
     true_class = rep(sim_list$D_g, 2),
     true = rep(sim_list$b1_g * sim_list$D_g, 2)) 
-ggplot(b_df, aes(true, estimate, color = model)) +
+
+b1_plot <- ggplot(b_df, aes(true, estimate, color = model)) +
   geom_point(alpha = 0.5) +
   coord_fixed() +
   geom_abline() +
   theme_minimal()
+
+saveRDS(b1_plot, file = "cs_eR2/data/a2_b1_plot.rds")
+saveRDS(roc_plot, file = "cs_eR2/data/a2_roc_plot.rds")
+saveRDS(fdr_plot, file = "cs_eR2/data/a2_fdr_plot.rds")

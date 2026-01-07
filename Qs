@@ -21,7 +21,7 @@ stan vs. edgeR
 
 what would I like in our discussion for next Tuesday? 
 - stan vs. edgeR comparison
-  - simulated data that is more difficult for the models
+  - simulated data that is more difficult for the models 
   - also more tags
   - also real data based if possible
   - show differences in random effect estimates (would like to find a reason to prefer stan's abilities here) 

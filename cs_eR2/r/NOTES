@@ -1,0 +1,16 @@
+dialing it in
+- attempt 1: M = 1
+  - perfect separation for both methods
+  - stan b1 estimates are much better
+  - stan FDR estimate is better, but both are liberal
+    - perfect separation might mess with the value of this plot
+
+- attempt 2: M = 0.7
+  - reasonable roc curves, stan slightly better
+  - stan b1 estimates are slightly better (eR overest)
+  - stan FDR estimate is better
+  - normfactors on / off for eR doesn't make a big difference; on might help slightly
+
+- queue
+  - larger G
+  - smaller pi0 (0.2 or 0.1)
