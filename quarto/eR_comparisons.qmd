@@ -1,0 +1,134 @@
+---
+title: "Comparing Stan model to edgeR"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: true
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+ 
+# Discussion
+
+The Stan model with marginalization seems to work ok with easy simulated data sets,
+and outperforms the JAGS model. This reassures me that there is not a fundamental error
+in this approach or the implementation. As a next step, I compare my Stan model to
+edgeR.
+
+Two thoughts after looking at the experiments below: 
+
+- My models are better than edgeR at estimating logFC
+- When it's harder to distinguish null and non-nulls, my models are liberal and edgeR is conservative
+with FDR control
+
+This increases my curiousity about a ROPE-like approach like we discussed briefly last month, that classifies genes using a threshold for
+estimated FCs instead of a hypothesis test. 
+
+Next steps I am considering:
+
+- Compare the Stan models to edgeR using 
+simulations based more closely on real data
+- Try to figure out why the Stan models are liberal with FDR control
+
+# Experiments
+
+## Model 1: clearly separated
+
+I started with the last simulation setting I had used to compare Stan and JAGS, 
+which included: 
+
+- Two treatment conditions
+  - Log-scale treatment effects simulated from a two-component mixture of normals
+  centered at $\pm 2$
+  - 50% of genes are true nulls
+- Paired samples with shared random effects
+- Sample normalization factors,
+
+but because the non-nulls were so clearly separated from null genes, 
+this setting was quite easy for both methods. 
+
+```{r}
+#| echo: false
+m1_b1_p <- readRDS("cs_eR1/data/a2_b1_plot.rds")
+m1_roc_p <- readRDS("cs_eR1/data/a2_roc_plot.rds")
+m1_fdr_p <- readRDS("cs_eR1/data/a2_fdr_plot.rds")
+
+m1_b1_p
+m1_roc_p
+m1_fdr_p
+```
+
+
+## Model 2: ambiguous 
+
+- Like Model 1, except:
+  - Two-component mixture of normals for simulated treatment effects is centered at $\pm 0.7$ instead of $\pm 2$
+  - 80% of genes are true nulls
+  
+```{r}
+#| echo: false
+m2_b1_p <- readRDS("cs_eR2/data/a1_b1_plot.rds")
+m2_roc_p <- readRDS("cs_eR2/data/a1_roc_plot.rds")
+m2_fdr_p <- readRDS("cs_eR2/data/a1_fdr_plot.rds")
+
+m2_b1_p
+m2_roc_p
+m2_fdr_p
+```
+
+## Model 3: treatment effects centered at 0
+
+- Like Model 2, except treatment effects are simulated from a standard normal
+
+```{r}
+#| echo: false
+m3_b1_p <- readRDS("cs_eR3/data/b1_plot.rds")
+m3_roc_p <- readRDS("cs_eR3/data/roc_plot.rds")
+m3_fdr_p <- readRDS("cs_eR3/data/fdr_plot.rds")
+
+m3_b1_p
+m3_roc_p
+m3_fdr_p
+```
+
+## Model 4: treatment effects with minimum FC cutoff
+
+- Like Models 2 & 3, except treatment effects are simulated as $\pm \text{ln}(1.5 + \text{exp}(1))$
+  - In other words, take $G$ draws from $\text{exp(1)}$, add 1.5, take the log, and then randomly flip 50% to negative
+  - I tried this because it's an approach that appears in a few papers
+
+```{r}
+#| echo: false
+m4_b1_p <- readRDS("cs_eR4/data/b1_plot.rds")
+m4_roc_p <- readRDS("cs_eR4/data/roc_plot.rds")
+m4_fdr_p <- readRDS("cs_eR4/data/fdr_plot.rds")
+
+m4_b1_p
+m4_roc_p
+m4_fdr_p
+```
+
+## Model 5: negative binomial counts and minimum abs. val. cutoff
+
+- Like Model 4, except:
+  - Counts are simulated from negative binomial 
+  - Gene-specific BCVs are sampled uniformly from $[0.01, 0.4]$
+    - This range is based on 'typical' values mentioned by edgeR authors
+
+```{r}
+#| echo: false
+m5_b1_p <- readRDS("cs_eR5/data/b1_plot.rds")
+m5_roc_p <- readRDS("cs_eR5/data/roc_plot.rds")
+m5_fdr_p <- readRDS("cs_eR5/data/fdr_plot.rds")
+
+m5_b1_p
+m5_roc_p
+m5_fdr_p
+```

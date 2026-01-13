@@ -50,6 +50,7 @@ G <- sim_list$G
 stan_post <- readRDS("cs_eR2/data/stan_fit.rds")
 eR_fit <- readRDS("cs_eR2/data/eR_fit.rds")
 stan_smry <- stan_post$summary()
+# stan_smry <- readRDS("cs_eR2/data/stan_smry.rds")
 
 # true nulls
 # reminder: D = 1 <=> non-null tag
@@ -84,7 +85,7 @@ fdr_plot <- ggplot(pm, aes(tfdr, nfdr, color = model)) +
 
 # 'b' ===========
 stan_b <- stan_smry %>%
-  filter(grepl("b1\\[", variable)) %>%
+  filter(grepl("^b1\\[", variable)) %>%
   select(variable, mean) %>%
   mutate(model = "stan", p = stan_p$mean, estimate = mean * p, mean = NULL, p = NULL) 
 eR_b <- tibble::tibble(estimate = eR_fit$tt$table$logFC, variable = stan_b$variable, model = "edger")

@@ -10,7 +10,12 @@ dialing it in
   - stan b1 estimates are slightly better (eR overest)
   - stan FDR estimate is better
   - normfactors on / off for eR doesn't make a big difference; on might help slightly
+  
+- attempt 3: M = 0.7, pi0 = 0.8, G = 250 
+  - two component b1 prior is horrible
+  
+- attempt 4: option to turn off two component b1 prior, M = 0.7, pi0 = 0.8, G = 250
 
 - queue
   - larger G
-  - smaller pi0 (0.2 or 0.1)
+  - larger pi0 (0.8), i.e. greater proportion null tags

@@ -45,11 +45,12 @@ library(ggplot2)
 library(cmdstanr)
 
 # data
-sim_list <- readRDS("cs_eR1/data/sim_list.rds")
+sim_list <- readRDS("cs_eR3/data/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs_eR1/data/stan_fit.rds")
-eR_fit <- readRDS("cs_eR1/data/edgeR_fit.rds")
-stan_smry <- stan_post$summary()
+stan_post <- readRDS("cs_eR3/data/stan_fit.rds")
+eR_fit <- readRDS("cs_eR3/data/eR_fit.rds")
+# stan_smry <- stan_post$summary()
+stan_smry <- readRDS("cs_eR3/data/stan_smry.rds")
 
 # true nulls
 # reminder: D = 1 <=> non-null tag
@@ -73,7 +74,7 @@ pm <- rbind(pme, pms)
 roc_plot <- ggplot(pm, aes(fpr, tpr, color = model)) + 
   geom_line() +
   theme_minimal() 
-# facet_wrap(.~model)
+  # facet_wrap(.~model)
 fdr_plot <- ggplot(pm, aes(tfdr, nfdr, color = model)) + 
   geom_line() + 
   theme_minimal() +
@@ -99,6 +100,6 @@ b1_plot <- ggplot(b_df, aes(true, estimate, color = model)) +
   geom_abline() +
   theme_minimal()
 
-saveRDS(b1_plot, file = "cs_eR1/data/a2_b1_plot.rds")
-saveRDS(roc_plot, file = "cs_eR1/data/a2_roc_plot.rds")
-saveRDS(fdr_plot, file = "cs_eR1/data/a2_fdr_plot.rds")
+saveRDS(b1_plot, file = "cs_eR3/data/b1_plot.rds")
+saveRDS(roc_plot, file = "cs_eR3/data/roc_plot.rds")
+saveRDS(fdr_plot, file = "cs_eR3/data/fdr_plot.rds")

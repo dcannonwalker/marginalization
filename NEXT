@@ -1,7 +1,7 @@
-attempt3: smaller pi0
-if it's dialed in, move to larger G (maybe launch one tonight if you can)
-outline discussion notes: 
-- make a quarto doc
-- set it up with the basic stuff
-- outline what you've experimented with
-- placeholders for plots and tables
+more experiments
+- cutoff minimum
+  - explore 1.5 + exp(1)
+    - how does stan do with single component prior and this simulation setting?
+    - does two component prior do better? 
+- negative binomial response
+- finish write up

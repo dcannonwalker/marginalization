@@ -23,6 +23,7 @@ data {
   real<lower=0> sig_u;
   real<lower=0> sig_S;
   matrix[N_g, N_g] sample_design_g;
+  vector<lower=0>[2] phi_bounds;
 }
 
 transformed data {
@@ -43,6 +44,7 @@ parameters {
   real mu_b0;
   real<lower=0> sig_b0;
   real<lower=0> sig_b1;
+  vector<lower=phi_bounds[1], upper=phi_bounds[2]>[G] phi;
 }
 
 transformed parameters {
@@ -62,7 +64,7 @@ transformed parameters {
    }
    for (d in 1:2) {
      mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + z_g * u_g[i] + sample_design_g * S;
-     lp[i, d] = log_p_i[d] + poisson_log_lpmf(y_g[i] | mu[i, d]);
+     lp[i, d] = log_p_i[d] + neg_binomial_2_log_lpmf(y_g[i] | mu[i, d], phi[i]);
    } 
    lse[i] = log_sum_exp(lp[i]);
   }

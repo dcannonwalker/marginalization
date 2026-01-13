@@ -1,3 +1,4 @@
+1/7 
 normfactors, jags vs. stan
 - questions from analysis: why is jags so bad? 
   - to explore
@@ -27,3 +28,9 @@ what would I like in our discussion for next Tuesday?
   - show differences in random effect estimates (would like to find a reason to prefer stan's abilities here) 
   - show differences in fixed effect estimates (looks promising for stan)
   - show differences in FDR, ROC (looks promising for stan)
+
+1/9
+effect size simulation
+- if we don't really believe the sharp null + a minimum FC cutoff matches reality,
+what do we believe? 
+  

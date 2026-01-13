@@ -8,10 +8,10 @@ N_g <- 10
 x_g <- rep(c(0, 1), each = N_g / 2)
 pi0 <- 0.8 # remember, this is the probability that D_g is 0
 # i.e., that there is not trt effect for g
-M <- 0.7
+# M <- 0.7
 D_g <- sample(c(0, 1), G, replace = TRUE, prob = c(pi0, 1 - pi0))
 b0_g <- rnorm(G, mean = 4)
-b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * (M + rnorm(G, sd = 1))
+b1_g <- sample(c(-1, 1), size = G, replace = TRUE) * log(1.5 + rexp(G))
 x <- rep(x_g, G)
 D <- rep(D_g, each = N_g)
 b1 <- rep(b1_g, each = N_g)
@@ -68,4 +68,4 @@ sim_list <- list(y = y, y_g = y_g, x = x, x_g = x_g, pi0 = pi0, N_g = N_g, G = G
                  sample_design = sample_design,
                  S_i = S_i, 
                  sig_S = sig_S)
-saveRDS(sim_list, "cs_eR2/data/sim_list.rds")
+saveRDS(sim_list, "cs_eR4/data/sim_list.rds")

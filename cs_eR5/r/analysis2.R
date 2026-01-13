@@ -45,11 +45,17 @@ library(ggplot2)
 library(cmdstanr)
 
 # data
-sim_list <- readRDS("cs_eR1/data/sim_list.rds")
+sim_list <- readRDS("cs_eR5/data/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs_eR1/data/stan_fit.rds")
-eR_fit <- readRDS("cs_eR1/data/edgeR_fit.rds")
-stan_smry <- stan_post$summary()
+stan_post <- readRDS("cs_eR5/data/stan_fit.rds")
+# stan_smry <- stan_post$summary()
+stan_smry <- readRDS("cs_eR5/data/stan_smry.rds")
+
+nb_post <- readRDS("cs_eR5/data/nb_fit.rds")
+# nb_smry <- nb_post$summary()
+nb_smry <- readRDS("cs_eR5/data/nb_smry.rds")
+
+eR_fit <- readRDS("cs_eR5/data/eR_fit.rds")
 
 # true nulls
 # reminder: D = 1 <=> non-null tag
@@ -62,18 +68,26 @@ stan_p <- stan_smry %>%
 
 ps <- 1 - stan_p$mean
 
+nb_p <- nb_smry %>%
+  filter(grepl("^p\\[", variable)) %>%
+  select(mean, median, sd)
+
+pnb <- 1 - nb_p$mean
+
 pe <- eR_fit$tt$table$PValue
 
 pme <- calc_perf_metrics(pe, tn, model = "edger", fdr_mtd = "fdr")
 
 pms <- calc_perf_metrics(ps, tn, model = "stan", fdr_mtd = "bfdr")
 
-pm <- rbind(pme, pms)
+pmnb <- calc_perf_metrics(pnb, tn, model = "stan_nb", fdr_mtd = "bfdr")
+
+pm <- rbind(pme, pms, pmnb)
 
 roc_plot <- ggplot(pm, aes(fpr, tpr, color = model)) + 
   geom_line() +
   theme_minimal() 
-# facet_wrap(.~model)
+  # facet_wrap(.~model)
 fdr_plot <- ggplot(pm, aes(tfdr, nfdr, color = model)) + 
   geom_line() + 
   theme_minimal() +
@@ -87,11 +101,18 @@ stan_b <- stan_smry %>%
   filter(grepl("^b1\\[", variable)) %>%
   select(variable, mean) %>%
   mutate(model = "stan", p = stan_p$mean, estimate = mean * p, mean = NULL, p = NULL) 
+
+nb_b <- nb_smry %>%
+  filter(grepl("^b1\\[", variable)) %>%
+  select(variable, mean) %>%
+  mutate(model = "stan_nb", p = nb_p$mean, estimate = mean * p, mean = NULL, p = NULL) 
+
 eR_b <- tibble::tibble(estimate = eR_fit$tt$table$logFC, variable = stan_b$variable, model = "edger")
-b_df <- rbind(stan_b, eR_b) %>%
+
+b_df <- rbind(stan_b, eR_b, nb_b) %>%
   mutate(
-    true_class = rep(sim_list$D_g, 2),
-    true = rep(sim_list$b1_g * sim_list$D_g, 2)) 
+    true_class = rep(sim_list$D_g, 3),
+    true = rep(sim_list$b1_g * sim_list$D_g, 3)) 
 
 b1_plot <- ggplot(b_df, aes(true, estimate, color = model)) +
   geom_point(alpha = 0.5) +
@@ -99,6 +120,6 @@ b1_plot <- ggplot(b_df, aes(true, estimate, color = model)) +
   geom_abline() +
   theme_minimal()
 
-saveRDS(b1_plot, file = "cs_eR1/data/a2_b1_plot.rds")
-saveRDS(roc_plot, file = "cs_eR1/data/a2_roc_plot.rds")
-saveRDS(fdr_plot, file = "cs_eR1/data/a2_fdr_plot.rds")
+saveRDS(b1_plot, file = "cs_eR5/data/b1_plot.rds")
+saveRDS(roc_plot, file = "cs_eR5/data/roc_plot.rds")
+saveRDS(fdr_plot, file = "cs_eR5/data/fdr_plot.rds")
