@@ -1,7 +1,7 @@
 set.seed(1)
 
 # general
-G <- 250 
+G <- 1000 
 N_g <- 10
 
 # fixed effects and related
@@ -30,7 +30,7 @@ z %*% u # looks right
 # normalization factors
 sig_S <- 0.2
 S <- rnorm(N_g, sd = sig_S)
-sample <- factor(1:10)
+sample <- factor(1:N_g)
 sample_design_g <- model.matrix(~0+sample)
 sample_design <- kronecker(rep(1, G), sample_design_g)
 sample_effects_g <- sample_design_g %*% S
@@ -48,7 +48,7 @@ head(mu)
 y  <- rpois(N_g * G, lambda = exp(mu))
 y_g <- matrix(nrow = G, ncol = N_g)
 G_i <- rep(seq(1, G), each = N_g)
-S_i <- rep(1:10, G)
+S_i <- rep(1:N_g, G)
 for (i in 1:G) {
   y_g[i, ] <- y[G_i == i]
 }
