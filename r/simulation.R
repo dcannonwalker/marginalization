@@ -14,7 +14,7 @@ data(kidney, package = 'SimSeq')
 #' groups: a vector giving treatment groups
 get_params <- function(counts, groups, mean_count_filter = 10) {
   mean_total = apply(counts,1,mean)
-  index_filter = which(mean_total < mean_count_filter)
+  index_filter = which(mean_total > mean_count_filter)
   counts <- counts[index_filter, ]
   params <- list()
   for (group_name in unique(groups)) {
@@ -25,35 +25,40 @@ get_params <- function(counts, groups, mean_count_filter = 10) {
   params
 }
 
-kparams <- get_params(counts = kidney$counts, groups = kidney$treatment)
 
 # simulate a data set
-n.var <- 100
-random.index = sample(1:length(kparams$total$mean), size=n.var)
-sample.mean1 = kparams$total$mean[random.index]
-sample.mean2 = sample.mean1
-n.diffexp <- n.var / 2
-fraction.upregulated <- 0.5
-upindex = 1:round(n.diffexp*fraction.upregulated)
-dnindex = round(n.diffexp*fraction.upregulated+1):n.diffexp
-basefc <- 1.5
-fc <- basefc + rexp(n = n.diffexp, rate = 1)
-sample.mean2[upindex] = sample.mean2[upindex]*fc[upindex]
-sample.mean2[dnindex] = sample.mean2[dnindex]/fc[dnindex]
-disp.total=kparams$total$disp
-sample.disp1 = disp.total[random.index]
-sample.disp2 = sample.disp1
+sim_data_set <- function(params, G, N, p_diff_exp = 0.2, p_up = 0.5, basefc = 1.5, 
+                         sample_effects = TRUE) {
+  idx <- sample(1:length(params$total$mean), size = G)
+  mu1 <- params$total$mean[idx]
+  mu2 <- mu1
+  n_diff_exp <- round(G * p_diff_exp)
+  upidx <- 1:round(n_diff_exp * p_up)
+  dnidx <- (max(upidx) + 1):n_diff_exp
+  fc <- basefc + rexp(n = n_diff_exp, rate = 1)
+  mu2[upidx] <- mu2[upidx]*fc[upidx]
+  mu2[dnidx] <- mu2[dnidx]/fc[dnidx]
+  disp <- params$total$disp
+  phi1 <- disp[idx]
+  phi2 <- phi1
+  
+  counts <- matrix(nrow = G, ncol = N)
+  if (sample_effects == TRUE) {
+    S1 <- runif(N / 2, min = 0.7, max = 1.3)
+    S2 <- runif(N / 2, min = 0.7, max = 1.3)
+  } else {
+    S1 <- S2 <- rep(1, N / 2)
+  }
+  
+  for (i in 1:G) {
+    counts[i, 1:(N / 2)] <- sapply(S1, FUN = function(x) rnbinom(1, 1 / phi1[i], mu = mu1[i] * x))
+    counts[i, (N / 2 + 1):N] <- sapply(S2, FUN = function(x) rnbinom(1, 1 / phi2[i], mu = mu2[i] * x))
+  }
+  list(counts = counts, mu1 = mu1, mu2 = mu2, phi1 = phi1, phi2 = phi2, S1 = S1, S2 = S2, fc = fc)
+}
 
-counts = matrix(nrow=n.var, ncol = 2*s)
-if(random_sampling==TRUE){
-  rand1=runif(s,min=0.7,max=1.3)
-  rand2=runif(s,min=0.7,max=1.3)
-}else{
-  rand1=rep(1,s)
-  rand2=rep(1,s)
-}
-for(i in 1:n.var)
-{
-  counts[i,1:s] = sapply(rand1, FUN = function(x) rnbinom(1, 1/sample.disp2[i], mu=sample.mean2[i]*x))
-  counts[i,(s+1):(2*s)] = sapply(rand2, FUN = function(x) rnbinom(1, 1/sample.disp1[i], mu=sample.mean1[i]*x))
-}
+kparams <- get_params(counts = kidney$counts, groups = kidney$treatment, mean_count_filter = 10)
+ds <- sim_data_set(params = kparams, G = 3000, N = 4, basefc = 1.5)
+hist(log(ds$mu1))
+hist(log(ds$mu2))
+plot(log(ds$mu1), log(ds$mu2))
