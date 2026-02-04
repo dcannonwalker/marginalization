@@ -2,16 +2,17 @@ library(edgeR)
 set.seed(5)
 sim_list <- readRDS("cs_eR4/data/sim_list.rds")
 G <- sim_list$G
+N_g <- sim_list$N_g
 # edgeR::edgeRUsersGuide()
 dgel <- DGEList(counts = sim_list$y_g, group = sim_list$x_g)
-colnames(dgel) <- paste0(rep(1:5, 2), "_", rep(c("ctl", "trt"), each = 5))
+colnames(dgel) <- paste0(rep(1:(N_g / 2), 2), "_", rep(c("ctl", "trt"), each = (N_g / 2)))
 
 # normalization
 dgel <- normLibSizes(dgel)
 
 # design
 sim_list$z_g
-pair <- factor(rep(1:5, 2))
+pair <- factor(rep(1:(N_g / 2), 2))
 trt <- factor(sim_list$x_g)
 design <- model.matrix(~trt + pair)
 rownames(design) <- colnames(dgel)
