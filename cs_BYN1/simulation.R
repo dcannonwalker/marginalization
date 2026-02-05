@@ -59,3 +59,7 @@ sim_data_set <- function(params, G, N, p_diff_exp = 0.2, p_up = 0.5, basefc = 1.
 
 kparams <- get_params(counts = kidney$counts, groups = kidney$treatment, mean_count_filter = 10)
 ds <- sim_data_set(params = kparams, G = 1000, N = 10, basefc = 1.5)
+
+sim_list <- list(
+  
+)
