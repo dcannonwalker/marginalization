@@ -58,8 +58,23 @@ sim_data_set <- function(params, G, N, p_diff_exp = 0.2, p_up = 0.5, basefc = 1.
 }
 
 kparams <- get_params(counts = kidney$counts, groups = kidney$treatment, mean_count_filter = 10)
-ds <- sim_data_set(params = kparams, G = 1000, N = 10, basefc = 1.5)
+N_g <- 10
+G <- 1000
+x_g <- rep(c(0, 1), each = N_g / 2)
+pi0 <- 0.2
+sig_S <- 0.2
+sample_design_g <- factor(1:N_g)
+ds <- sim_data_set(params = kparams, G = G, N = N_g, basefc = 1.5)
 
 sim_list <- list(
-  
+  N_g = N_g,
+  G = G,
+  y_g = ds$counts,
+  x_g = x_g,
+  pi0 = pi0,
+  sig_S = sig_S,
+  sample_design_g = sample_design_g,
+  ds = ds,
+  kparams = kparams
 )
+saveRDS(sim_list, "cs_BYN1/sim_list.rds")

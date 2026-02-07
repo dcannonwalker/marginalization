@@ -1,14 +1,11 @@
 data {
   int<lower=0> N_g;
-  int<lower=0> N_u_g;
   int<lower=0> G;
   int<lower=0, upper=1> two_comp_mu_b1;
   array[G, N_g] int<lower=0> y_g;
   vector[N_g] x_g;
-  matrix[N_g, N_u_g] z_g;
   // real<lower=0> sig;
   real<lower=0, upper=1> pi0;
-  real<lower=0> sig_u;
   real<lower=0> sig_S;
   matrix[N_g, N_g] sample_design_g;
   vector<lower=0>[2] phi_bounds;
@@ -24,7 +21,6 @@ parameters {
   vector[G] b0;
   vector[G] b1; 
   vector[N_g] S;
-  array[G] vector[N_u_g] u_g;
   real<lower=0> sig;
   vector[two_comp_mu_b1 + 1] mu_b1;
   real mu_b0;
@@ -37,10 +33,8 @@ transformed parameters {
   array[G] vector[2] lp;
   array[G, 2] vector[N_g] mu;
   vector[G] lse;
-  vector[G] u_contr;
   vector[G] b1_contr;
   for (i in 1:G) {
-   u_contr[i] = normal_lpdf(u_g[i, ] | 0, sig_u);
    if (two_comp_mu_b1 == 1) {
      b1_contr[i] = log_sum_exp(normal_lpdf(b1[i] | mu_b1[1], sig_b1),
                              normal_lpdf(b1[i] | mu_b1[2], sig_b1));
@@ -49,7 +43,7 @@ transformed parameters {
      b1_contr[i] = normal_lpdf(b1[i] | mu_b1[1], sig_b1);
    }
    for (d in 1:2) {
-     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + z_g * u_g[i] + sample_design_g * S;
+     mu[i, d] = b0[i] + (d - 1) * x_g * b1[i] + sample_design_g * S;
      lp[i, d] = log_p_i[d] + neg_binomial_2_log_lpmf(y_g[i] | mu[i, d], phi[i]);
    } 
    lse[i] = log_sum_exp(lp[i]);
@@ -63,7 +57,6 @@ model {
   mu_b1 ~ normal(0, sqrt(10));
   mu_b0 ~ normal(0, sqrt(10));
   target += sum(b1_contr);
-  target += sum(u_contr);
   target += sum(lse);
 }
 
@@ -73,4 +66,3 @@ generated quantities {
     p[i] = exp(lp[i, 2]) / sum(exp(lp[i]));
   }
 }
-
