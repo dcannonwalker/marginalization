@@ -1,0 +1,99 @@
+---
+title: "Notes for 2-12"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: true
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Highlights
+
+* The Stan model is sensitive to the prior proportion of nulls ($\pi_0$)
+* The Stan model with Poisson response has a very poor fit
+  * Offsetting biased estimates of several parameters
+* The 'Ribodiff' model allows different dispersions for RNA and RPF samples
+in riboseq
+
+### $\pi_0 = 0.8$
+
+I found an error - I was setting $\pi_0 = 0.2$ ($\pi_0$ is the prior proportion of null genes).
+The true proportion of null genes is $0.8$. Setting $\pi_0 = 0.8$ instead of 
+to an incorrect value improves the performance of the stan models. 
+
+```{r}
+#| echo: false
+readRDS("cs_BYN1/roc_plot_8.rds")
+readRDS("cs_BYN1/fdr_plot_8.rds")
+readRDS("cs_BYN1/b1_plot_8.rds")
+# readRDS("cs_BYN1/phi_plot_8.rds")
+```
+
+### Poisson Stan fit
+
+The sample normfactors plot isn't great because of the big difference in y-axis scale, but 
+the Poisson response model is completely missing (overestimating by a large margin) the true value,
+where the NB response model's posterior is centered right at the true value. 
+
+```{r}
+#| echo: false
+readRDS("cs_BYN1/b0_plot_9.rds")
+readRDS("cs_BYN1/S_plot_9.rds")
+```
+
+### Ribodiff
+
+- We saw quite poor performance from this method in the ribovi paper (and I think also in one of Ran's papers?)
+- Their model does allow different dispersions for RNA and RPF samples
+- Their model does not have any pairing between RNA and RPF from the same biological sample
+
+## Extra
+
+
+### Adjusting the prior proportion of nulls
+
+I ran the model with
+a few different settings for the $\pi_0$ prior to test sensitivity. 
+
+#### $\pi_0 = 0.9$
+
+```{r}
+#| echo: false
+readRDS("cs_BYN1/roc_plot_9.rds")
+readRDS("cs_BYN1/fdr_plot_9.rds")
+readRDS("cs_BYN1/b1_plot_9.rds")
+# readRDS("cs_BYN1/phi_plot_9.rds")
+```
+
+#### $\pi_0 = 0.99$
+
+```{r}
+#| echo: false
+readRDS("cs_BYN1/roc_plot_99.rds")
+readRDS("cs_BYN1/fdr_plot_99.rds")
+readRDS("cs_BYN1/b1_plot_99.rds")
+# readRDS("cs_BYN1/phi_plot_99.rds")
+```
+
+### Simulation description
+
+I replicated a simple simulation setting from [BYN PLOSOne 2020](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0232271#pone.0232271.ref021)
+and compared the performance of edgeR and my Stan models on this data set. 
+The setting is just a two-group comparison, with baseline means and dispersions
+sampled from edgeR estimates produced by a large real data set and FC simulated from 1.5 + exp(1). 
+There are no random effects. 
+
+- Stan model with negative binomial response and estimated dispersion is ok
+  - Better logFC estimates than edgeR
+  - Similar ROC to edgeR
+  - Liberal FDR control, where edgeR is conservative
+  - Overestimates (truly) large dispersions, where edgeR underestimates 
+- Stan model with Poisson response is quite poor

@@ -1,0 +1,95 @@
+---
+title: "Notes for 2-26"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: false
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Conditionally Poisson? 
+
+- Does it make sense to use a Poisson model for counts conditional on random effects? 
+- Impression of the literature: 
+  - Early identification of overdispersion
+  - Popular methods use NB
+  - NB is more flexible, so doesn't need much justification
+- How would we check if Poisson was adequate after conditioning on random effects? 
+- Naive idea: use AIC to compare NB and Poisson GLM
+
+### Simple simulation
+
+- Two treatments
+- Paired samples
+
+Mean model for each count: 
+
+$$
+log(\mu_{gi}) = x_i^T\beta_g + z_i^T u_g + log(S_i)
+$$
+Then $y_{gi} \sim NB(\mu_{gi}, \phi_g)$ or $y_{gi} \sim Pois(\mu_{gi})$; 
+each simulated data set uses either NB or Pois. 
+
+Naive procedure: 
+
+- Estimate the $S_i$ before model fitting and treat as offsets
+- Fit either Poisson GLMs or NB GLMs to each row 
+- Compare AIC between the two fits for each row
+
+Fit GLMs using this formula: 
+
+```{r}
+#| eval: false
+#| echo: true
+formula(y ~ trt + pairs + offset(log_S))
+```
+
+Preferred model when counts are truly NB distributed, conditional on pair effects (out of 100): 
+
+```{r}
+w_pairs <- readRDS("aic_w_pairs.rds")
+summary(w_pairs$aic_nb$preferred_model)
+```
+
+Preferred model when counts are truly Poisson distributed, conditional on pair effects (out of 100): 
+
+```{r}
+summary(w_pairs$aic_pois$preferred_model)
+```
+
+Aside: if the model doesn't include the pair effects, in other words if 
+the model is fit with this formula: 
+
+```{r}
+#| eval: false
+#| echo: true
+formula(y ~ trt + offset(log_S))
+```
+
+Then the NB model is generally preferred no matter the true conditional response
+distribution (which I think makes sense). 
+
+### KIRC data
+
+The KIRC kidney data set includes 36 pairs of samples (tumor and non-tumor). 
+I repeated the procedure described above on 1000 genes from this data set. 
+The negative binomial GLM  has lower AIC for all 1000 of these genes.
+
+```{r}
+readRDS("kirc_aic_plot.rds")
+```
+
+## Extra
+
+Papers that are referenced for overdispersion (not a complete list - I quit grabbing links for these):  
+
+- [Baggerly 1](https://pmc.ncbi.nlm.nih.gov/articles/PMC524524/)
+- [Lu](https://pmc.ncbi.nlm.nih.gov/articles/PMC1189357/)

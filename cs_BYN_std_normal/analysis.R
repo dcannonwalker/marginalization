@@ -45,17 +45,17 @@ library(ggplot2)
 library(cmdstanr)
 
 # data
-sim_list <- readRDS("cs_BYN1/sim_list.rds")
+sim_list <- readRDS("cs_BYN_std_normal/sim_list.rds")
 G <- sim_list$G
-stan_post <- readRDS("cs_BYN1/stan_fit.rds")
+stan_post <- readRDS("cs_BYN_std_normal/stan_fit.rds")
 # stan_smry <- stan_post$summary()
-stan_smry <- readRDS("cs_BYN1/stan_smry.rds")
+stan_smry <- readRDS("cs_BYN_std_normal/stan_smry.rds")
 
-nb_post <- readRDS("cs_BYN1/nb_fit.rds")
+nb_post <- readRDS("cs_BYN_std_normal/nb_fit.rds")
 # nb_smry <- nb_post$summary()
-nb_smry <- readRDS("cs_BYN1/nb_smry.rds")
+nb_smry <- readRDS("cs_BYN_std_normal/nb_smry.rds")
 
-eR_fit <- readRDS("cs_BYN1/erfit.rds")
+eR_fit <- readRDS("cs_BYN_std_normal/erfit.rds")
 
 # true nulls
 # reminder: D = 1 <=> non-null tag
@@ -151,7 +151,7 @@ phi_plot <- ggplot(phi_df, aes(true, estimate, color = model)) +
   theme_minimal() + 
   ggtitle("Dispersion estimates against true values")
 
-saveRDS(b1_plot, file = "cs_BYN1/b1_plot.rds")
-saveRDS(roc_plot, file = "cs_BYN1/roc_plot.rds")
-saveRDS(fdr_plot, file = "cs_BYN1/fdr_plot.rds")
-saveRDS(phi_plot, file = "cs_BYN1/phi_plot.rds")
+saveRDS(b1_plot, file = "cs_BYN_std_normal/b1_plot.rds")
+saveRDS(roc_plot, file = "cs_BYN_std_normal/roc_plot.rds")
+saveRDS(fdr_plot, file = "cs_BYN_std_normal/fdr_plot.rds")
+saveRDS(phi_plot, file = "cs_BYN_std_normal/phi_plot.rds")

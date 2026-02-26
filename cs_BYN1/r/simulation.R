@@ -61,7 +61,7 @@ kparams <- get_params(counts = kidney$counts, groups = kidney$treatment, mean_co
 N_g <- 10
 G <- 1000
 x_g <- rep(c(0, 1), each = N_g / 2)
-pi0 <- 0.2
+pi0 <- 0.9
 sig_S <- 0.2
 sample_design_g <- factor(1:N_g)
 ds <- sim_data_set(params = kparams, G = G, N = N_g, basefc = 1.5)

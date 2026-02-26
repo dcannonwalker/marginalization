@@ -1,0 +1,71 @@
+---
+title: "Simple Published Simulation Replication + Zika Dispersion Comparisons"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: true
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+ 
+## Discussion
+
+### Stan models
+
+I replicated a simple simulation setting from [BYN PLOSOne 2020](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0232271#pone.0232271.ref021)
+and compared the performance of edgeR and my Stan models on this data set. 
+The setting is just a two-group comparison, with baseline means and dispersions
+sampled from edgeR estimates produced by a large real data set and FC simulated from 1.5 + exp(1). 
+There are no random effects. 
+
+- Stan model with negative binomial response and estimated dispersion is ok
+  - Better logFC estimates than edgeR
+  - Similar ROC to edgeR
+  - Liberal FDR control, where edgeR is conservative
+  - Overestimates (truly) large dispersions, where edgeR underestimates 
+- Stan model with Poisson response is quite poor
+
+### Zika ribo-seq data set
+
+I compared dispersion estimates produced by DESeq2 for RNA and RPF samples separately. 
+The estimates do not appear strongly correlated. 
+
+## Stan Models
+
+```{r}
+#| echo: false
+readRDS("cs_BYN1/roc_plot.rds")
+readRDS("cs_BYN1/fdr_plot.rds")
+readRDS("cs_BYN1/b1_plot.rds")
+readRDS("cs_BYN1/phi_plot.rds")
+```
+
+## Zika ribo-seq 
+
+### Dispersions for RNA samples vs. RPF samples
+
+```{r}
+#| echo: false
+readRDS("zika_res/JEG3_WT_disp_plot.rds")
+readRDS("zika_res/JEG3_MUTII_disp_plot.rds")
+readRDS("zika_res/WT_MUTII_disp_plot.rds")
+```
+
+### logFC estimates
+
+```{r}
+#| echo: false
+readRDS("zika_res/JEG3_WT_type_lfc_rna_plot.rds")
+readRDS("zika_res/JEG3_MUTII_type_lfc_rna_plot.rds")
+readRDS("zika_res/WT_MUTII_type_lfc_rna_plot.rds")
+readRDS("zika_res/JEG3_WT_type_lfc_rpf_plot.rds")
+readRDS("zika_res/JEG3_MUTII_type_lfc_rpf_plot.rds")
+readRDS("zika_res/WT_MUTII_type_lfc_rpf_plot.rds")
+```

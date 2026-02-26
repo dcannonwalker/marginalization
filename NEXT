@@ -1,7 +1,28 @@
-- replicate the simulation setting from a paper
-  - pick a paper (probably the review of methods I've been looking at)
-  - check their code for the simulation (you've already done part of this)
-  - copy it pretty much exactly
-  - test edgeR and ngstan on a single data set, as you've been doing
-- run a larger test with that setting
-- augment that setting with paired sample random effects
+do we need the negative binomial model if we have random effects adding variance to Poisson? 
+- if we do not, the counts should be Poisson distributed given the mean
+
+idea: if we are sampling from a bunch of Poisson distributions, how does that 
+look different from sampling from a bunch of NB distributions that share a dispersion? 
+
+idea: for each of NB and Pois, 
+- simulate counts from that distribution conditioned on same mean
+  - includes different treatment and pair effects for each row
+  - includes different disp for each row for NB
+- fit NB and Pois models, with and without pair effects in model matrix
+- compare AIC for NB and Pois models
+- think I will see: 
+  - for conditionally Poisson sim, Poisson is better with pair effects, NB is better without
+  - for conditionally NB sim, NB is better always
+
+
+how do the edgeR estimates of pair effects compare to the Stan estimates? 
+- need to examine pairwise differences
+
+REVISIT: DO I STILL NEED?
+Paired random effects
+- examine results
+- run with more samples
+- consider different variance for ranefs
+
+"Fixed" normfactors estimated pre-model vs. estimation integrated into model
+- modify cs_BYN1 to do this
