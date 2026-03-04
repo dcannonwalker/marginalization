@@ -1,0 +1,30 @@
+---
+title: "Reference for null prob params"
+format: 
+  html:
+    self-contained: true
+# format: revealjs
+df-print: tibble
+knitr:
+    opts_knit: 
+      root.dir: "~/marginalization"
+    opts_chunk: 
+      echo: false
+      output: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Definitions
+
+$\pi_0:$ the overall proportion of null genes; 1 means all genes are null
+$p:$ the vector of gene-specific probabilities of null status; 1 means that particular gene is certainly null
+$D:$ the vector of discrete gene-specific null status (for a simulation); 1 means that particular gene is null (actually, since this is simulated)
+
+## Calculations
+
+$$
+p(D = 1 | y, \theta) = \frac{ p(y | D = 1, \theta) p(D | \theta)}{\sum_{d = 0}^1 p(y | D = d, \theta) P(D = d | \theta)}
+$$ 
+Since I am storing $log(p(y | D = d, \theta) p(D = d | \theta))$ in `ll[i, 2 - d]`,
+this is `exp(ll[i, 1]) / sum(exp(ll[i, 1]) + exp(ll[i, 2]))`

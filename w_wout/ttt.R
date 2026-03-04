@@ -1,6 +1,7 @@
 library(dplyr)
 library(posterior)
-m <- cmdstanr::cmdstan_model("w_wout/wout.stan")
+mwout <- cmdstanr::cmdstan_model("w_wout/wout.stan")
+mw <- cmdstanr::cmdstan_model("w_wout/w.stan")
 names(m$variables()$data)
 d <- list(
   N = 10, 
