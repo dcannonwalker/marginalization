@@ -1,18 +1,6 @@
-do we need the negative binomial model if we have random effects adding variance to Poisson? 
-- if we do not, the counts should be Poisson distributed given the mean
-
-idea: if we are sampling from a bunch of Poisson distributions, how does that 
-look different from sampling from a bunch of NB distributions that share a dispersion? 
-
-idea: for each of NB and Pois, 
-- simulate counts from that distribution conditioned on same mean
-  - includes different treatment and pair effects for each row
-  - includes different disp for each row for NB
-- fit NB and Pois models, with and without pair effects in model matrix
-- compare AIC for NB and Pois models
-- think I will see: 
-  - for conditionally Poisson sim, Poisson is better with pair effects, NB is better without
-  - for conditionally NB sim, NB is better always
+thinking about priors
+- estimate random pair effects from kirc with wout model
+- look at posteriors for ranenf estimates
 
 
 how do the edgeR estimates of pair effects compare to the Stan estimates? 
