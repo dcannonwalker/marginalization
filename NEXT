@@ -1,3 +1,19 @@
+fit wout_fixed_s to kirc data and save
+- copy w and wout stan models to dir xxx
+- simulate ds xxx
+- fit w and wout models to sim ds xxx
+- analysis rx
+    - smry check (looking at means only)
+      - how does the posterior for pi0 look???
+      - how are the rhats and the ESS? 
+      - how do parameter estimates compare between the models? 
+      - compare the bmix to the beta??? (expectation: systematic differences)
+      - compare the alphas (expectation: no diff)
+      - compare the ranefs (expectation: no diff)
+    - posterior distributions check
+      - betas and sb - expectation: some odd behavior because of severe mismatch prior / data
+      - rope test (pick an lfc cutoff and an 'alpha' cutoff)  
+    - roc curve, fdr curve
 thinking about priors
 - estimate random pair effects from kirc with wout model
 - look at posteriors for ranenf estimates
