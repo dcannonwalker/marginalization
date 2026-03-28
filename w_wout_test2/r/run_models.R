@@ -1,8 +1,8 @@
 library(cmdstanr)
 
-simlist <- readRDS("w_wout_test1/data/sim_list.rds")
-mwout <- cmdstan_model("w_wout_test1/stan/wout_fixed_s.stan")
-mw <- cmdstan_model("w_wout_test1/stan/w_fixed_s.stan")
+simlist <- readRDS("w_wout_test2/data/sim_list.rds")
+mwout <- cmdstan_model("w_wout_test2/stan/wout_fixed_s.stan")
+mw <- cmdstan_model("w_wout_test2/stan/w_fixed_s.stan")
 names(mw$variables()$data)
 temp <- edgeR::DGEList(counts = simlist$y_g)
 temp <- edgeR::normLibSizes(temp)
@@ -22,7 +22,7 @@ standata <- list(
 )
 
 fit_w <- mw$sample(data = standata, chains = 1, iter_warmup = 1000, iter_sampling = 1000)
-fit_w$save_object("w_wout_test1/data/fitw.rds")
+fit_w$save_object("w_wout_test2/data/fitw.rds")
 fit_wout <- mwout$sample(data = standata, chains = 1, iter_warmup = 1000, iter_sampling = 1000)
-fit_wout$save_object("w_wout_test1/data/fitwout.rds")
+fit_wout$save_object("w_wout_test2/data/fitwout.rds")
 

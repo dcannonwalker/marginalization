@@ -5,8 +5,8 @@ library(tidyr)
 source("w_wout_test1/r/calc_perf_metrics.r")
 erfit <- readRDS("w_wout_test1/data/erfit.rds")
 tt <- erfit$tt
-smryw <- readRDS("w_wout_test1/data/smryw.rds")
-smrywout <- readRDS("w_wout_test1/data/smrywout.rds")
+smryw <- readRDS("w_wout_test1/data/smryw2000.rds")
+smrywout <- readRDS("w_wout_test1/data/smrywout2000.rds")
 simlist <- readRDS("w_wout_test1/data/sim_list.rds")
 names(simlist)
 beta_true <- -log(simlist$ds$mu1 / simlist$ds$mu2)
@@ -110,8 +110,3 @@ qdf %>%
   arrange(p) %>%
   mutate(ngs_fdr = ngs_perf_metrics$nfdr)
 
-
-tdf <- tibble(beta_er = tt$table$logFC, beta_true)
-tdf %>%
-  ggplot(aes(beta_er)) +
-  geom_histogram(binwidth = 0.1)

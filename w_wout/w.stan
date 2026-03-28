@@ -9,12 +9,14 @@ data {
   array[po ? 0:G, N] int<lower=0> y;
   real mao; 
   real<lower=0, upper=1> prob; // prior mean proportion null
+  real<lower=0> bss; // prior sample size for beta_proportion
+  
 }
 
-transformed data {
-  real a = 4; 
-  real b = (1 - prob) * a / prob;
-}
+// transformed data {
+//   real a = 4; 
+//   real b = (1 - prob) * a / prob;
+// }
 
 parameters {
   array[G] real alpha;
@@ -62,7 +64,8 @@ model {
   sb ~ normal(0, 1); 
   sp ~ normal(0, 1); 
   su ~ normal(0, 1);
-  pi0 ~ beta(a, b);
+  pi0 ~ beta_proportion(prob, bss);
+  // pi0 ~ beta(a, b);
   if (po == 0) target += sum(lse);
   target += sum(u_contr);
 }
