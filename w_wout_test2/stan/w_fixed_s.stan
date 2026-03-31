@@ -9,12 +9,14 @@ data {
   array[po ? 0:G, N] int<lower=0> y;
   real mao; 
   real<lower=0, upper=1> prob; // prior mean proportion null
+  real<lower=0> bss;
+  vector[N] s; // log effective library size 
 }
 
-transformed data {
-  real a = 4; 
-  real b = (1 - prob) * a / prob;
-}
+// transformed data {
+//   real a = 4; 
+//   real b = (1 - prob) * a / prob;
+// }
 
 parameters {
   array[G] real alpha;
@@ -42,8 +44,8 @@ transformed parameters {
   for (i in 1:G) {
     phi[i] = 1 / bcv[i]^2;
     u_contr[i] = normal_lpdf(u[i] | 0, su);
-    for (d in 1:2) { // d = 1 => null
-      eta[i, d] = alpha[i] + (2 - d) * x * beta[i] + z * u[i];
+    for (d in 1:2) { // d = 2 => null
+      eta[i, d] = alpha[i] + (2 - d) * x * beta[i] + z * u[i] + s;
       if (po == 0) {
         ll[i, d] = log_pi0[d] + neg_binomial_2_log_lpmf(y[i] | eta[i, d], phi[i]);
       }
@@ -62,7 +64,8 @@ model {
   sb ~ normal(0, 1); 
   sp ~ normal(0, 1); 
   su ~ normal(0, 1);
-  pi0 ~ beta(a, b);
+  pi0 ~ beta_proportion(prob, bss);
+  // pi0 ~ beta(a, b);
   if (po == 0) target += sum(lse);
   target += sum(u_contr);
 }
@@ -72,13 +75,15 @@ generated quantities {
   array[G] real p; 
   array[G] real pinv;
   array[G] int<lower=0, upper=1> D;
+  array[G] real bmix;
   for (i in 1:G) {
     if (po == 0) {
-      p[i] = exp(ll[i, 1]) / sum(exp(ll[i]));
-      pinv[i] = 1 / (1 + exp(ll[i, 2] - ll[i, 1]));
+      p[i] = exp(ll[i, 2]) / sum(exp(ll[i]));
+      pinv[i] = 1 / (1 + exp(ll[i, 1] - ll[i, 2]));
     }
     else p[i] = pi0;
+    bmix[i] = (1 - p[i]) * beta[i];
     D[i] = bernoulli_rng(pi0); // is gene i null? 
-    ysim[i] = neg_binomial_2_log_rng(eta[i, 2 - D[i]], phi[i]); 
+    ysim[i] = neg_binomial_2_log_rng(eta[i, 1 + D[i]], phi[i]); 
   }
 }

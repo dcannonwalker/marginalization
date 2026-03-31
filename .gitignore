@@ -6,3 +6,5 @@
 .quarto
 *.rds
 Rplots.pdf
+*/stan/**
+!*/stan/*.*

@@ -1,0 +1,5 @@
+Test the stan model with and without the marginalized discrete prior
+- ranefs
+- two group
+    - large trt fx 
+- fixed normfactors

@@ -17,12 +17,11 @@ standata <- list(
   y = simlist$y_g,
   mao = 0,
   s = s,
-  prob = 0.9,
-  bss = 50
+  prob = 0.8
 )
 
-fit_w <- mw$sample(data = standata, chains = 1, iter_warmup = 1000, iter_sampling = 1000)
-fit_w$save_object("w_wout_test1/data/fitw.rds")
-fit_wout <- mwout$sample(data = standata, chains = 1, iter_warmup = 1000, iter_sampling = 1000)
-fit_wout$save_object("w_wout_test1/data/fitwout.rds")
+fit_w <- mw$sample(data = standata, chains = 1, iter_warmup = 4000, iter_sampling = 4000)
+fit_w$save_object("w_wout_test1/data/fitw4000.rds")
+fit_wout <- mwout$sample(data = standata, chains = 1, iter_warmup = 4000, iter_sampling = 4000)
+fit_wout$save_object("w_wout_test1/data/fitwout4000.rds")
 
